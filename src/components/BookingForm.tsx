@@ -54,6 +54,9 @@ export const BookingForm = ({ listingId, pricePerNight }: BookingFormProps) => {
 
     setIsSubmitting(true);
 
+    // Simulate payment confirmation
+    toast.success("Payment confirmed!", { duration: 2000 });
+
     const booking = {
       listing_id: listingId,
       guest_id: user.id,
@@ -74,7 +77,7 @@ export const BookingForm = ({ listingId, pricePerNight }: BookingFormProps) => {
       return;
     }
 
-    toast.success("Booking confirmed!");
+    toast.success("Booking confirmed! View it in your bookings tab.");
     navigate("/bookings");
   };
 
@@ -115,8 +118,11 @@ export const BookingForm = ({ listingId, pricePerNight }: BookingFormProps) => {
             className="w-full"
             disabled={isSubmitting || !checkIn || !checkOut}
           >
-            {isSubmitting ? "Booking..." : "Book Now"}
+            {isSubmitting ? "Confirming..." : "Confirm Booking"}
           </Button>
+          <p className="text-sm text-center text-muted-foreground mt-2">
+            Payment will be handled securely via PayPal or card
+          </p>
         </form>
       </CardContent>
     </Card>
