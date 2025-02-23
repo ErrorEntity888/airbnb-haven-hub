@@ -9,7 +9,116 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          check_in: string
+          check_out: string
+          created_at: string
+          guest_id: string
+          id: string
+          listing_id: string
+          status: string
+          total_price: number
+        }
+        Insert: {
+          check_in: string
+          check_out: string
+          created_at?: string
+          guest_id: string
+          id?: string
+          listing_id: string
+          status?: string
+          total_price: number
+        }
+        Update: {
+          check_in?: string
+          check_out?: string
+          created_at?: string
+          guest_id?: string
+          id?: string
+          listing_id?: string
+          status?: string
+          total_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listings: {
+        Row: {
+          created_at: string
+          description: string
+          host_id: string
+          id: string
+          image_url: string
+          location: string
+          price_per_night: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          host_id: string
+          id?: string
+          image_url: string
+          location: string
+          price_per_night: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          host_id?: string
+          id?: string
+          image_url?: string
+          location?: string
+          price_per_night?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listings_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
