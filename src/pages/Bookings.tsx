@@ -11,6 +11,7 @@ import {
 import { format } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
 import { ReviewForm } from "@/components/ReviewForm";
+import { Star } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
