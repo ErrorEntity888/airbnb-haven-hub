@@ -18,6 +18,11 @@ export const Navbar = () => {
         <div className="flex items-center gap-4">
           {user ? (
             <>
+              <Link to="/bookings">
+                <Button variant="ghost" className="hover:bg-slate-100">
+                  My Bookings
+                </Button>
+              </Link>
               <Button variant="ghost" className="hover:bg-slate-100">
                 Become a Host
               </Button>
