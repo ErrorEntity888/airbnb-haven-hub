@@ -19,6 +19,17 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+interface Review {
+  rating: number;
+  comment: string | null;
+}
+
+interface ListingInfo {
+  title: string;
+  image_url: string;
+  location: string;
+}
+
 interface Booking {
   id: string;
   listing_id: string;
@@ -27,15 +38,9 @@ interface Booking {
   check_out: string;
   total_price: number;
   created_at: string;
-  listings: {
-    title: string;
-    image_url: string;
-    location: string;
-  };
-  reviews: {
-    rating: number;
-    comment: string;
-  }[] | null;
+  status: string;
+  listings: ListingInfo;
+  reviews: Review[];
 }
 
 const BookingsPage = () => {
@@ -62,7 +67,12 @@ const BookingsPage = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Booking[];
+      
+      // Transform the data to match our TypeScript interface
+      return (data || []).map(booking => ({
+        ...booking,
+        reviews: booking.reviews || []
+      })) as Booking[];
     },
     enabled: !!user,
   });
@@ -117,7 +127,7 @@ const BookingsPage = () => {
                   </div>
                 </div>
 
-                {isPastBooking(booking.check_out) && !booking.reviews?.length && (
+                {isPastBooking(booking.check_out) && booking.reviews.length === 0 && (
                   <Accordion type="single" collapsible>
                     <AccordionItem value="review">
                       <AccordionTrigger>Leave a Review</AccordionTrigger>
@@ -128,8 +138,8 @@ const BookingsPage = () => {
                   </Accordion>
                 )}
 
-                {booking.reviews?.map((review) => (
-                  <div key={booking.id} className="bg-muted p-4 rounded-lg">
+                {booking.reviews.map((review, reviewIndex) => (
+                  <div key={`${booking.id}-review-${reviewIndex}`} className="bg-muted p-4 rounded-lg">
                     <div className="flex items-center gap-1 mb-2">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star
