@@ -10,6 +10,13 @@ import {
 } from "@/components/ui/card";
 import { format } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
+import { ReviewForm } from "@/components/ReviewForm";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface Booking {
   id: string;
@@ -24,12 +31,16 @@ interface Booking {
     image_url: string;
     location: string;
   };
+  reviews: {
+    rating: number;
+    comment: string;
+  }[] | null;
 }
 
 const BookingsPage = () => {
   const { user } = useAuth();
 
-  const { data: bookings, isLoading } = useQuery({
+  const { data: bookings, isLoading, refetch } = useQuery({
     queryKey: ["bookings", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -40,6 +51,10 @@ const BookingsPage = () => {
             title,
             image_url,
             location
+          ),
+          reviews (
+            rating,
+            comment
           )
         `)
         .eq("guest_id", user?.id)
@@ -66,6 +81,10 @@ const BookingsPage = () => {
     );
   }
 
+  const isPastBooking = (checkOut: string) => {
+    return new Date(checkOut) < new Date();
+  };
+
   return (
     <div>
       <Navbar />
@@ -77,23 +96,54 @@ const BookingsPage = () => {
               <CardHeader>
                 <CardTitle>{booking.listings.title}</CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="aspect-video rounded-lg overflow-hidden">
-                  <img
-                    src={booking.listings.image_url}
-                    alt={booking.listings.title}
-                    className="w-full h-full object-cover"
-                  />
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="aspect-video rounded-lg overflow-hidden">
+                    <img
+                      src={booking.listings.image_url}
+                      alt={booking.listings.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="md:col-span-3 space-y-2">
+                    <p className="text-muted-foreground">{booking.listings.location}</p>
+                    <p>Check-in: {format(new Date(booking.check_in), 'PPP')}</p>
+                    <p>Check-out: {format(new Date(booking.check_out), 'PPP')}</p>
+                    <p className="font-semibold">Total: ${booking.total_price}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Booked on {format(new Date(booking.created_at), 'PPP')}
+                    </p>
+                  </div>
                 </div>
-                <div className="md:col-span-3 space-y-2">
-                  <p className="text-muted-foreground">{booking.listings.location}</p>
-                  <p>Check-in: {format(new Date(booking.check_in), 'PPP')}</p>
-                  <p>Check-out: {format(new Date(booking.check_out), 'PPP')}</p>
-                  <p className="font-semibold">Total: ${booking.total_price}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Booked on {format(new Date(booking.created_at), 'PPP')}
-                  </p>
-                </div>
+
+                {isPastBooking(booking.check_out) && !booking.reviews?.length && (
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="review">
+                      <AccordionTrigger>Leave a Review</AccordionTrigger>
+                      <AccordionContent>
+                        <ReviewForm bookingId={booking.id} onReviewSubmitted={refetch} />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )}
+
+                {booking.reviews?.map((review) => (
+                  <div key={booking.id} className="bg-muted p-4 rounded-lg">
+                    <div className="flex items-center gap-1 mb-2">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < review.rating
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {review.comment && <p className="text-sm">{review.comment}</p>}
+                  </div>
+                ))}
               </CardContent>
             </Card>
           ))}
