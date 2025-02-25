@@ -28,9 +28,11 @@ export const Navbar = () => {
                   My Bookings
                 </Button>
               </Link>
-              <Button variant="ghost" className="hover:bg-slate-100">
-                Become a Host
-              </Button>
+              <Link to="/create-listing">
+                <Button variant="ghost" className="hover:bg-slate-100">
+                  Become a Host
+                </Button>
+              </Link>
               <Button onClick={() => signOut()}>Sign out</Button>
             </>
           ) : (

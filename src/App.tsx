@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ListingDetail from "./pages/ListingDetail";
 import BookingsPage from "./pages/Bookings";
+import CreateListing from "./pages/CreateListing";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/listings/:id" element={<ListingDetail />} />
             <Route path="/bookings" element={<BookingsPage />} />
+            <Route path="/create-listing" element={<CreateListing />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>
