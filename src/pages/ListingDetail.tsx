@@ -65,7 +65,7 @@ const ListingDetail = () => {
             </div>
             <h1 className="text-3xl font-bold mb-2">{listing.title}</h1>
             <p className="text-lg text-muted-foreground mb-4">{listing.location}</p>
-            <p className="text-lg mb-4">${listing.price_per_night} per night</p>
+            <p className="text-lg mb-4">₹{listing.price_per_night} per night</p>
             <div className="prose max-w-none">
               <p>{listing.description}</p>
             </div>
