@@ -84,7 +84,7 @@ const CreateListing = () => {
               />
             </div>
             <div>
-              <Label htmlFor="price_per_night">Price per night ($)</Label>
+              <Label htmlFor="price_per_night">Price per night (₹)</Label>
               <Input
                 id="price_per_night"
                 name="price_per_night"
@@ -93,8 +93,8 @@ const CreateListing = () => {
                 onChange={handleChange}
                 required
                 min="0"
-                step="0.01"
-                placeholder="100"
+                step="1"
+                placeholder="1200"
               />
             </div>
             <div>
@@ -131,3 +131,4 @@ const CreateListing = () => {
 };
 
 export default CreateListing;
+
