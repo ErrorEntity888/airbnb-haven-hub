@@ -9,9 +9,14 @@ export const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <Link to="/" className="text-airbnb-primary font-bold text-2xl">
             HavenHub
+          </Link>
+          <Link to="/">
+            <Button variant="ghost" className="hover:bg-slate-100">
+              Home
+            </Button>
           </Link>
         </div>
         
