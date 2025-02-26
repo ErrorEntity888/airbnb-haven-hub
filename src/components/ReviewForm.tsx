@@ -24,28 +24,35 @@ export const ReviewForm = ({ bookingId, onReviewSubmitted }: ReviewFormProps) =>
     }
 
     setIsSubmitting(true);
-    const { error } = await supabase
-      .from("reviews")
-      .insert({
-        booking_id: bookingId,
-        rating,
-        comment: comment.trim() || null,
-      });
+    try {
+      const { error } = await supabase
+        .from("reviews")
+        .insert({
+          booking_id: bookingId,
+          rating,
+          comment: comment.trim() || null,
+        });
 
-    setIsSubmitting(false);
-    
-    if (error) {
-      if (error.code === "23505") {
-        toast.error("You have already reviewed this booking");
-      } else {
-        toast.error("Failed to submit review");
-        console.error("Review error:", error);
+      if (error) {
+        if (error.code === "23505") {
+          toast.error("You have already reviewed this booking");
+        } else {
+          toast.error("Failed to submit review");
+          console.error("Review error:", error);
+        }
+        return;
       }
-      return;
-    }
 
-    toast.success("Review submitted successfully!");
-    onReviewSubmitted();
+      toast.success("Review submitted successfully!");
+      setRating(0);
+      setComment("");
+      onReviewSubmitted();
+    } catch (error) {
+      console.error("Review submission error:", error);
+      toast.error("Failed to submit review");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

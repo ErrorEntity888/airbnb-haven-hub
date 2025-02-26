@@ -68,7 +68,6 @@ const BookingsPage = () => {
 
       if (error) throw error;
       
-      // Transform the data to match our TypeScript interface
       return (data || []).map(booking => ({
         ...booking,
         reviews: booking.reviews || []
@@ -120,7 +119,7 @@ const BookingsPage = () => {
                     <p className="text-muted-foreground">{booking.listings.location}</p>
                     <p>Check-in: {format(new Date(booking.check_in), 'PPP')}</p>
                     <p>Check-out: {format(new Date(booking.check_out), 'PPP')}</p>
-                    <p className="font-semibold">Total: ${booking.total_price}</p>
+                    <p className="font-semibold">₹{booking.total_price}</p>
                     <p className="text-sm text-muted-foreground">
                       Booked on {format(new Date(booking.created_at), 'PPP')}
                     </p>
@@ -128,7 +127,7 @@ const BookingsPage = () => {
                 </div>
 
                 {isPastBooking(booking.check_out) && booking.reviews.length === 0 && (
-                  <Accordion type="single" collapsible>
+                  <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="review">
                       <AccordionTrigger>Leave a Review</AccordionTrigger>
                       <AccordionContent>
