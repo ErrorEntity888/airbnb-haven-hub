@@ -110,7 +110,7 @@ export const BookingForm = ({ listingId, pricePerNight }: BookingFormProps) => {
           </div>
           {checkIn && checkOut && (
             <div className="text-lg font-semibold">
-              Total: ${calculateTotalPrice()}
+              Total: ₹{calculateTotalPrice()}
             </div>
           )}
           <Button
