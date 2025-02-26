@@ -58,7 +58,7 @@ const BookingsPage = () => {
             image_url,
             location
           ),
-          reviews (
+          reviews!bookings_id_fkey (
             rating,
             comment
           )
@@ -66,11 +66,14 @@ const BookingsPage = () => {
         .eq("guest_id", user?.id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      
+      if (error) {
+        console.error("Error fetching bookings:", error);
+        throw error;
+      }
+
       return (data || []).map(booking => ({
         ...booking,
-        reviews: booking.reviews || []
+        reviews: Array.isArray(booking.reviews) ? booking.reviews : []
       })) as Booking[];
     },
     enabled: !!user,
@@ -137,7 +140,7 @@ const BookingsPage = () => {
                   </Accordion>
                 )}
 
-                {booking.reviews.map((review, reviewIndex) => (
+                {booking.reviews && booking.reviews.length > 0 && booking.reviews.map((review, reviewIndex) => (
                   <div key={`${booking.id}-review-${reviewIndex}`} className="bg-muted p-4 rounded-lg">
                     <div className="flex items-center gap-1 mb-2">
                       {Array.from({ length: 5 }).map((_, i) => (
