@@ -12,12 +12,6 @@ import { format } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
 import { ReviewForm } from "@/components/ReviewForm";
 import { Star } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 interface Review {
   rating: number;
@@ -144,18 +138,14 @@ const BookingsPage = () => {
                   </div>
 
                   {isPastBooking(booking.check_out) && booking.reviews.length === 0 && (
-                    <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value="review">
-                        <AccordionTrigger>Leave a Review</AccordionTrigger>
-                        <AccordionContent>
-                          <ReviewForm 
-                            bookingId={booking.id} 
-                            guestId={booking.guest_id} 
-                            onReviewSubmitted={refetch} 
-                          />
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                    <div className="mt-4 border-t pt-4">
+                      <h3 className="text-lg font-medium mb-4">Leave a Review</h3>
+                      <ReviewForm 
+                        bookingId={booking.id} 
+                        guestId={booking.guest_id} 
+                        onReviewSubmitted={refetch} 
+                      />
+                    </div>
                   )}
 
                   {booking.reviews && booking.reviews.length > 0 && booking.reviews.map((review, reviewIndex) => (
