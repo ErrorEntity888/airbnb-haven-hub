@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import ListingDetail from "./pages/ListingDetail";
 import BookingsPage from "./pages/Bookings";
 import CreateListing from "./pages/CreateListing";
+import EditListing from "./pages/EditListing";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/listings/:id" element={<ListingDetail />} />
             <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/create-listing" element={<CreateListing />} />
+            <Route path="/listings/:id/edit" element={<EditListing />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>

@@ -26,7 +26,7 @@ const ListingDetail = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { data: listing, isLoading } = useQuery({
+  const { data: listing, isLoading, refetch } = useQuery({
     queryKey: ["listing", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -55,6 +55,10 @@ const ListingDetail = () => {
       console.error("Error deleting listing:", error);
       toast.error("Failed to delete listing");
     }
+  };
+
+  const handleEdit = () => {
+    navigate(`/listings/${id}/edit`);
   };
 
   if (isLoading) {
@@ -106,13 +110,14 @@ const ListingDetail = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => navigate(`/listings/${id}/edit`)}
+                    onClick={handleEdit}
+                    title="Edit Listing"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="icon">
+                      <Button variant="destructive" size="icon" title="Delete Listing">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </AlertDialogTrigger>
