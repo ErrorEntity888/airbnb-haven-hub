@@ -4,12 +4,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, connectionIssue } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, isSignIn: boolean) => {
     e.preventDefault();
@@ -30,6 +32,10 @@ const Auth = () => {
     }
   };
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
@@ -40,6 +46,16 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {connectionIssue && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Connection Error</AlertTitle>
+              <AlertDescription>
+                Unable to connect to the authentication service. Please check your internet connection.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Tabs defaultValue="signin">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -55,7 +71,7 @@ const Auth = () => {
                   <Label htmlFor="signin-password">Password</Label>
                   <Input id="signin-password" name="password" type="password" required />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading || connectionIssue}>
                   {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
@@ -74,13 +90,25 @@ const Auth = () => {
                   <Label htmlFor="signup-password">Password</Label>
                   <Input id="signup-password" name="password" type="password" required />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading || connectionIssue}>
                   {isLoading ? "Signing up..." : "Sign Up"}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
         </CardContent>
+        {connectionIssue && (
+          <CardFooter>
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center justify-center gap-2" 
+              onClick={handleRefresh}
+            >
+              <RefreshCw className="h-4 w-4" />
+              Retry Connection
+            </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );

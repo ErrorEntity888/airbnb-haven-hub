@@ -1,13 +1,14 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { User, AuthError } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, checkSupabaseConnection } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  connectionIssue: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -18,12 +19,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [connectionIssue, setConnectionIssue] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check connection status
+    checkSupabaseConnection().then(isConnected => {
+      if (!isConnected) {
+        setConnectionIssue(true);
+        toast.error("Unable to connect to Supabase. Please check your internet connection.");
+      }
+    });
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
+    }).catch(err => {
+      console.error("Error getting session:", err);
+      setLoading(false);
+      setConnectionIssue(true);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -84,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, connectionIssue, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
