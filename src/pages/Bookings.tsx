@@ -148,7 +148,11 @@ const BookingsPage = () => {
                       <AccordionItem value="review">
                         <AccordionTrigger>Leave a Review</AccordionTrigger>
                         <AccordionContent>
-                          <ReviewForm bookingId={booking.id} onReviewSubmitted={refetch} />
+                          <ReviewForm 
+                            bookingId={booking.id} 
+                            guestId={booking.guest_id} 
+                            onReviewSubmitted={refetch} 
+                          />
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>

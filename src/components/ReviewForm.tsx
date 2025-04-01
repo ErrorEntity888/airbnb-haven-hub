@@ -5,19 +5,29 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Star } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ReviewFormProps {
   bookingId: string;
+  guestId: string; // Add guest ID to ensure permission check
   onReviewSubmitted: () => void;
 }
 
-export const ReviewForm = ({ bookingId, onReviewSubmitted }: ReviewFormProps) => {
+export const ReviewForm = ({ bookingId, guestId, onReviewSubmitted }: ReviewFormProps) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Ensure the current user is the one who made the booking
+    if (user?.id !== guestId) {
+      toast.error("Only the guest who made this booking can leave a review");
+      return;
+    }
+
     if (rating === 0) {
       toast.error("Please select a rating");
       return;
