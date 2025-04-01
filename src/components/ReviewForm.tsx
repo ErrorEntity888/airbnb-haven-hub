@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface ReviewFormProps {
   bookingId: string;
-  guestId: string; // Add guest ID to ensure permission check
+  guestId: string; // Guest ID to ensure permission check
   onReviewSubmitted: () => void;
 }
 
@@ -35,25 +35,58 @@ export const ReviewForm = ({ bookingId, guestId, onReviewSubmitted }: ReviewForm
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
+      // Check if a review already exists for this booking
+      const { data: existingReview, error: checkError } = await supabase
         .from("reviews")
-        .insert({
-          booking_id: bookingId,
-          rating,
-          comment: comment.trim() || null,
-        });
+        .select("id")
+        .eq("booking_id", bookingId)
+        .single();
 
-      if (error) {
-        if (error.code === "23505") {
-          toast.error("You have already reviewed this booking");
-        } else {
-          toast.error("Failed to submit review");
-          console.error("Review error:", error);
-        }
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
+        console.error("Error checking existing review:", checkError);
+        toast.error("Failed to check existing reviews");
+        setIsSubmitting(false);
         return;
       }
 
-      toast.success("Review submitted successfully!");
+      // If review already exists, update it instead of inserting
+      if (existingReview) {
+        const { error: updateError } = await supabase
+          .from("reviews")
+          .update({
+            rating,
+            comment: comment.trim() || null,
+          })
+          .eq("booking_id", bookingId);
+
+        if (updateError) {
+          console.error("Review update error:", updateError);
+          toast.error("Failed to update review");
+          setIsSubmitting(false);
+          return;
+        }
+
+        toast.success("Review updated successfully!");
+      } else {
+        // Insert new review
+        const { error: insertError } = await supabase
+          .from("reviews")
+          .insert({
+            booking_id: bookingId,
+            rating,
+            comment: comment.trim() || null,
+          });
+
+        if (insertError) {
+          console.error("Review insertion error:", insertError);
+          toast.error("Failed to submit review");
+          setIsSubmitting(false);
+          return;
+        }
+
+        toast.success("Review submitted successfully!");
+      }
+
       setRating(0);
       setComment("");
       onReviewSubmitted();
